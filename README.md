@@ -69,7 +69,7 @@ dependencies {
 
 #### 在yml或properties中配置
 
-[哈尔滨信息工程学院的同学点我](https://github.com/itning/cas-spring-boot-starter/tree/master/pic)
+[哈尔滨信息工程学院的同学点我](https://github.com/itning/cas-spring-boot-starter/tree/master/pic/config)
 
 |            属性             |                 说明                 |        默认        |
 | :-------------------------: | :----------------------------------: | :----------------: |

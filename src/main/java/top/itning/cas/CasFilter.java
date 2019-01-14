@@ -76,6 +76,8 @@ public class CasFilter implements Filter {
             }
             //logout
             if (casProperties.getClientLogoutPath().equals(req.getServletPath())) {
+                session.removeAttribute(casProperties.getSessionAttributeName());
+                session.invalidate();
                 //重定向到登出地址
                 String location = casProperties.getLogoutUrl().toString();
                 debug("Match logout path...");

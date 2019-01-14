@@ -153,6 +153,12 @@ public class MyCasCallBack implements ICasCallback {
     }
 }
 ```
+## 如何
+
+1. 如何获取CAS服务器登陆后传过来的属性？
+
+   我们将它放在session中了，你可以使用 ```HttpSession#getAttribute``` 方法来获取，参数默认为```_cas_attributes_```，当然你可以在配置中更改```cas.session-attribute-name```的值
+
 ## 流程
 
 ![流程图](https://raw.githubusercontent.com/itning/cas-spring-boot-starter/master/pic/1.png)

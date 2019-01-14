@@ -147,4 +147,4 @@ public class MyCasCallBack implements ICasCallback {
 ```
 ## 流程
 
-[流程图]()
+![流程图](https://raw.githubusercontent.com/itning/cas-spring-boot-starter/master/pic/1.png)

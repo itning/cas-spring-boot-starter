@@ -117,19 +117,27 @@ public class MyCasCallBack implements ICasCallback {
         //当登陆成功时自动调用该方法
         //你可以向浏览器写一段话或者写入JSON
         PrintWriter writer = resp.getWriter();
-        writer.write("登陆成功");
+        writer.write("success");
         writer.flush();
         writer.close();
     }
 
     @Override
-    public void onLoginFailure(HttpServletResponse resp, HttpServletRequest req) throws IOException, ServletException {
+    public void onLoginFailure(HttpServletResponse resp, HttpServletRequest req, Exception e) throws IOException, ServletException {
         //当登陆失败的时候回调
+        PrintWriter writer = resp.getWriter();
+        writer.write("fail " + e.getMessage());
+        writer.flush();
+        writer.close();
     }
 
     @Override
     public void onNeverLogin(HttpServletResponse resp, HttpServletRequest req) throws IOException, ServletException {
         //当用户没有登陆时的回调
+        PrintWriter writer = resp.getWriter();
+        writer.write("never");
+        writer.flush();
+        writer.close();
     }
 
     @Override

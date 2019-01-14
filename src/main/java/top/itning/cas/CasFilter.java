@@ -90,23 +90,29 @@ public class CasFilter implements Filter {
         String ticket = req.getParameter("ticket");
         if (ticket != null) {
             debug("Get Ticket: " + ticket);
-            debug("Send request to " + casProperties.getServerUrl() + "/serviceValidate?ticket=" + ticket + "&service=" + casProperties.getLocalServerUrl());
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity(casProperties.getServerUrl() + "/serviceValidate?ticket={ticket}&service={local_server_url}", String.class, ticket, casProperties.getLocalServerUrl());
-            debug("Get response status code: " + responseEntity.getStatusCode().value());
-            if (responseEntity.getBody() != null) {
-                debug("Get response body: ");
-                debug(responseEntity.getBody());
-                Map<String, String> map = analysisBody2Map(responseEntity.getBody());
-                //解析成功,用户成功登陆
-                session.setAttribute(casProperties.getSessionAttributeName(), map);
-                debug("Set attribute " + casProperties.getSessionAttributeName() + " success");
-                iCasCallback.onLoginSuccess(resp, req, map);
+            try {
+                debug("Send request to " + casProperties.getServerUrl() + "/serviceValidate?ticket=" + ticket + "&service=" + casProperties.getLocalServerUrl());
+                ResponseEntity<String> responseEntity = restTemplate.getForEntity(casProperties.getServerUrl() + "/serviceValidate?ticket={ticket}&service={local_server_url}", String.class, ticket, casProperties.getLocalServerUrl());
+                debug("Get response status code: " + responseEntity.getStatusCode().value());
+                if (responseEntity.getBody() != null) {
+                    debug("Get response body: ");
+                    debug(responseEntity.getBody());
+                    Map<String, String> map = analysisBody2Map(responseEntity.getBody());
+                    //解析成功,用户成功登陆
+                    session.setAttribute(casProperties.getSessionAttributeName(), map);
+                    debug("Set attribute " + casProperties.getSessionAttributeName() + " success");
+                    iCasCallback.onLoginSuccess(resp, req, map);
+                    return;
+                } else {
+                    logger.error("AUTHENTICATION failed : Body is Null");
+                    iCasCallback.onLoginFailure(resp, req, new RuntimeException("AUTHENTICATION failed : Body is Null"));
+                    return;
+                }
+            } catch (Exception e) {
+                debug(e.getMessage());
+                iCasCallback.onLoginFailure(resp, req, e);
                 return;
-            } else {
-                logger.error("AUTHENTICATION failed : Body is Null");
             }
-            iCasCallback.onLoginFailure(resp, req);
-            return;
         }
         if (session.getAttribute(casProperties.getSessionAttributeName()) == null) {
             iCasCallback.onNeverLogin(resp, req);

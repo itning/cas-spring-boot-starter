@@ -38,7 +38,7 @@ public class CasCallBackDefaultImpl implements ICasCallback {
     }
 
     @Override
-    public void onLoginFailure(HttpServletResponse resp, HttpServletRequest req) throws IOException {
+    public void onLoginFailure(HttpServletResponse resp, HttpServletRequest req, Exception e) throws IOException {
         allowCors(resp, req);
         resp.setHeader("Retry-After", "10");
         resp.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);

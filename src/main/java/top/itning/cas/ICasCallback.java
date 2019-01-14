@@ -28,10 +28,11 @@ public interface ICasCallback {
      *
      * @param resp {@link HttpServletResponse}
      * @param req  {@link HttpServletRequest}
+     * @param e    登陆失败时抛出的异常
      * @throws IOException      可能抛出的异常
      * @throws ServletException 可能抛出的异常
      */
-    void onLoginFailure(HttpServletResponse resp, HttpServletRequest req) throws IOException, ServletException;
+    void onLoginFailure(HttpServletResponse resp, HttpServletRequest req, Exception e) throws IOException, ServletException;
 
     /**
      * 当用户没有登陆时

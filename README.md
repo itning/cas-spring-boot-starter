@@ -43,6 +43,8 @@
 
 在yml或properties中配置
 
+[哈尔滨信息工程等学院的同学点我](https://github.com/itning/cas-spring-boot-starter/tree/master/pic)
+
 |            属性             |                 说明                 |        默认        |
 | :-------------------------: | :----------------------------------: | :----------------: |
 |       cas.allow-cors        |             是否允许跨域             |        true        |

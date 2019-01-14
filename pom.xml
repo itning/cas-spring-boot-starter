@@ -7,6 +7,14 @@
     <groupId>top.itning</groupId>
     <artifactId>cas-spring-boot-starter</artifactId>
     <version>1.0.0-RELEASE</version>
+
+    <url>https://github.com/itning/cas-spring-boot-starter</url>
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>https://github.com/itning/cas-spring-boot-starter/blob/master/LICENSE</url>
+        </license>
+    </licenses>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 

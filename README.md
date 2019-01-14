@@ -8,7 +8,7 @@
 
 [![GitHub license](https://img.shields.io/github/license/itning/cas-spring-boot-starter.svg)](https://github.com/itning/cas-spring-boot-starter/blob/master/LICENSE)
 [![GitHub last commit](https://img.shields.io/github/last-commit/itning/cas-spring-boot-starter.svg)]()
-[![GitHub release](https://img.shields.io/github/release/itning/cas-spring-boot-starter.svg)]()
+[![GitHub release](https://img.shields.io/github/release/itning/cas-spring-boot-starter.svg)](https://github.com/itning/cas-spring-boot-starter/releases)
 [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/itning/cas-spring-boot-starter.svg)]()
 [![language](https://img.shields.io/badge/language-JAVA-orange.svg)]()
 [![](https://jitpack.io/v/itning/cas-spring-boot-starter.svg)](https://jitpack.io/#itning/cas-spring-boot-starter)

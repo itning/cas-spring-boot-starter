@@ -42,6 +42,7 @@ public class CasFilter implements Filter {
         iCasCallback = ctx.getBean(ICasCallback.class);
         logger.info("Use login path: " + casProperties.getClientLoginPath());
         logger.info("Use logout path: " + casProperties.getClientLogoutPath());
+        logger.info("Use ICasCallback Implements: " + iCasCallback.getClass().getSimpleName());
         debug(casProperties.toString());
 
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();

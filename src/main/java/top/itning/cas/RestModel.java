@@ -9,45 +9,45 @@ import java.io.Serializable;
  *
  * @author itning
  */
-class RestModel<T> implements Serializable {
+public class RestModel<T> implements Serializable {
     private int code;
     private String msg;
     private T data;
 
-    RestModel() {
+    public RestModel() {
     }
 
-    private RestModel(int code, String msg, T data) {
+    public RestModel(int code, String msg, T data) {
         this.code = code;
         this.msg = msg;
         this.data = data;
     }
 
-    RestModel(T data) {
+    public RestModel(T data) {
         this(HttpStatus.OK.value(), "查询成功", data);
     }
 
-    int getCode() {
+    public int getCode() {
         return code;
     }
 
-    void setCode(int code) {
+    public void setCode(int code) {
         this.code = code;
     }
 
-    String getMsg() {
+    public String getMsg() {
         return msg;
     }
 
-    void setMsg(String msg) {
+    public void setMsg(String msg) {
         this.msg = msg;
     }
 
-    T getData() {
+    public T getData() {
         return data;
     }
 
-    void setData(T data) {
+    public void setData(T data) {
         this.data = data;
     }
 }

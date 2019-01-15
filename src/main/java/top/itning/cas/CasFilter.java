@@ -141,7 +141,7 @@ public class CasFilter implements Filter {
                 @SuppressWarnings("unchecked")
                 List<Node> attributesNode = doc.selectNodes("//cas:attributes/*");
                 attributesNode.forEach(defaultElement -> map.put(defaultElement.getName(), defaultElement.getText()));
-                logger.debug("Get Map: " + map);
+                debug("Get Map: " + map);
             } else {
                 //认证失败
                 logger.error("AUTHENTICATION failed : cas:authenticationSuccess Not Found");

@@ -1,8 +1,5 @@
 package top.itning.cas;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -17,8 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -32,6 +27,7 @@ public class CasFilter implements Filter {
     private RestTemplate restTemplate;
     private CasProperties casProperties;
     private ICasCallback iCasCallback;
+    private ICasConfig iCasConfig;
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -40,9 +36,11 @@ public class CasFilter implements Filter {
                 .getRequiredWebApplicationContext(filterConfig.getServletContext());
         casProperties = ctx.getBean(CasProperties.class);
         iCasCallback = ctx.getBean(ICasCallback.class);
+        iCasConfig = ctx.getBean(ICasConfig.class);
         logger.info("Use login path: " + casProperties.getClientLoginPath());
         logger.info("Use logout path: " + casProperties.getClientLogoutPath());
-        logger.info("Use ICasCallback Implements: " + iCasCallback.getClass().getSimpleName());
+        logger.info("Use ICasCallback Implements: " + iCasCallback.getClass().getName());
+        logger.info("Use ICasConfig Implements: " + iCasConfig.getClass().getName());
         debug(casProperties.toString());
 
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
@@ -77,8 +75,10 @@ public class CasFilter implements Filter {
             }
             //logout
             if (casProperties.getClientLogoutPath().equals(req.getServletPath())) {
-                session.removeAttribute(casProperties.getSessionAttributeName());
-                session.invalidate();
+                if (iCasConfig.needSetMapSession()) {
+                    session.removeAttribute(casProperties.getSessionAttributeName());
+                    session.invalidate();
+                }
                 //重定向到登出地址
                 String location = casProperties.getLogoutUrl().toString();
                 debug("Match logout path...");
@@ -98,10 +98,12 @@ public class CasFilter implements Filter {
                 if (responseEntity.getBody() != null) {
                     debug("Get response body: ");
                     debug(responseEntity.getBody());
-                    Map<String, String> map = analysisBody2Map(responseEntity.getBody());
+                    Map<String, String> map = iCasConfig.analysisBody2Map(responseEntity.getBody());
                     //解析成功,用户成功登陆
-                    session.setAttribute(casProperties.getSessionAttributeName(), map);
-                    debug("Set attribute " + casProperties.getSessionAttributeName() + " success");
+                    if (iCasConfig.needSetMapSession()) {
+                        session.setAttribute(casProperties.getSessionAttributeName(), map);
+                        debug("Set attribute " + casProperties.getSessionAttributeName() + " success");
+                    }
                     iCasCallback.onLoginSuccess(resp, req, map);
                     return;
                 } else {
@@ -115,42 +117,16 @@ public class CasFilter implements Filter {
                 return;
             }
         }
-        if (session.getAttribute(casProperties.getSessionAttributeName()) == null) {
-            iCasCallback.onNeverLogin(resp, req);
+        if (iCasConfig.isLogin(resp, req)) {
+            chain.doFilter(request, response);
             return;
         }
-        chain.doFilter(request, response);
+        iCasCallback.onNeverLogin(resp, req);
     }
 
     @Override
     public void destroy() {
 
-    }
-
-    /**
-     * 解析响应体
-     *
-     * @param body 响应体
-     * @return 解析完成的映射
-     */
-    private Map<String, String> analysisBody2Map(String body) {
-        Map<String, String> map = new HashMap<>(16);
-        try {
-            Document doc = DocumentHelper.parseText(body);
-            Node successNode = doc.selectSingleNode("//cas:authenticationSuccess");
-            if (successNode != null) {
-                @SuppressWarnings("unchecked")
-                List<Node> attributesNode = doc.selectNodes("//cas:attributes/*");
-                attributesNode.forEach(defaultElement -> map.put(defaultElement.getName(), defaultElement.getText()));
-                debug("Get Map: " + map);
-            } else {
-                //认证失败
-                logger.error("AUTHENTICATION failed : cas:authenticationSuccess Not Found");
-            }
-        } catch (Exception e) {
-            logger.error("AUTHENTICATION failed and Catch Exception: ", e);
-        }
-        return map;
     }
 
     /**

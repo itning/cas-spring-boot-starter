@@ -3,10 +3,8 @@ package top.itning.cas;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,15 +17,13 @@ import java.util.Map;
  *
  * @author itning
  */
-@Component
-public class CasCallBackDefaultImpl implements ICasCallback {
+final public class CasCallBackDefaultImpl implements ICasCallback {
     private static final Logger logger = LoggerFactory.getLogger(CasCallBackDefaultImpl.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final CasProperties casProperties;
 
-    @Autowired
-    public CasCallBackDefaultImpl(CasProperties casProperties) {
+    CasCallBackDefaultImpl(CasProperties casProperties) {
         this.casProperties = casProperties;
     }
 

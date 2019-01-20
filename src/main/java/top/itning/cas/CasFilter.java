@@ -55,7 +55,6 @@ public class CasFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletResponse resp = (HttpServletResponse) response;
         HttpServletRequest req = (HttpServletRequest) request;
-        HttpSession session = req.getSession();
         debug("Get Servlet Path: " + req.getServletPath());
 
         if (casProperties.isAllowCors() && HttpMethod.OPTIONS.matches(req.getMethod())) {
@@ -76,6 +75,7 @@ public class CasFilter implements Filter {
             //logout
             if (casProperties.getClientLogoutPath().equals(req.getServletPath())) {
                 if (iCasConfig.needSetMapSession()) {
+                    HttpSession session = req.getSession();
                     session.removeAttribute(casProperties.getSessionAttributeName());
                     session.invalidate();
                 }
@@ -101,6 +101,7 @@ public class CasFilter implements Filter {
                     Map<String, String> map = iCasConfig.analysisBody2Map(responseEntity.getBody());
                     //解析成功,用户成功登陆
                     if (iCasConfig.needSetMapSession()) {
+                        HttpSession session = req.getSession();
                         session.setAttribute(casProperties.getSessionAttributeName(), map);
                         debug("Set attribute " + casProperties.getSessionAttributeName() + " success");
                     }

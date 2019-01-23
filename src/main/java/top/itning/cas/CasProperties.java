@@ -3,6 +3,7 @@ package top.itning.cas;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * CAS 配置
@@ -61,6 +62,10 @@ public class CasProperties {
      * 允许跨域
      */
     private boolean allowCors = true;
+    /**
+     * 排除过滤
+     */
+    private List<String> exclude;
 
     public URI getServerUrl() {
         return serverUrl;
@@ -158,6 +163,14 @@ public class CasProperties {
         this.allowCors = allowCors;
     }
 
+    public List<String> getExclude() {
+        return exclude;
+    }
+
+    public void setExclude(List<String> exclude) {
+        this.exclude = exclude;
+    }
+
     @Override
     public String toString() {
         return "CasProperties{" +
@@ -173,6 +186,7 @@ public class CasProperties {
                 ", requestConnectTimeout=" + requestConnectTimeout +
                 ", debug=" + debug +
                 ", allowCors=" + allowCors +
+                ", exclude=" + exclude +
                 '}';
     }
 }

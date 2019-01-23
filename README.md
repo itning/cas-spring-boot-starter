@@ -36,7 +36,7 @@
 <dependency>
     <groupId>com.github.itning</groupId>
     <artifactId>cas-spring-boot-starter</artifactId>
-    <version>1.0.4-RELEASE</version>
+    <version>1.0.5-RELEASE</version>
 </dependency>
 ```
 
@@ -57,7 +57,7 @@ allprojects {
 
 ```groovy
 dependencies {
-	implementation 'com.github.itning:cas-spring-boot-starter:1.0.4-RELEASE'
+	implementation 'com.github.itning:cas-spring-boot-starter:1.0.5-RELEASE'
 }
 ```
 
@@ -85,6 +85,7 @@ dependencies {
 |        cas.login-url        |       登陆地址(CAS服务端地址)        |        null        |
 |       cas.logout-url        |       登出网址(CAS服务端地址)        |        null        |
 |       cas.server-url        |            CAS服务端地址             |        null        |
+| cas.exclude | 排除过滤地址(会排除以其开头的请求) |  |
 
 **注意：默认为null的必须配置**
 

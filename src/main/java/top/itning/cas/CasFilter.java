@@ -56,7 +56,14 @@ public class CasFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
         HttpServletRequest req = (HttpServletRequest) request;
         debug("Get Servlet Path: " + req.getServletPath());
-
+        if (casProperties.getExclude() != null) {
+            for (String path : casProperties.getExclude()) {
+                if (req.getServletPath().startsWith(path)) {
+                    chain.doFilter(request, response);
+                    return;
+                }
+            }
+        }
         if (casProperties.isAllowCors() && HttpMethod.OPTIONS.matches(req.getMethod())) {
             iCasCallback.onOptionsHttpMethodRequest(resp, req);
             return;

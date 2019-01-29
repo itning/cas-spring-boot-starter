@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 
@@ -73,7 +74,7 @@ public class CasFilter implements Filter {
             //login
             if (casProperties.getClientLoginPath().equals(req.getServletPath())) {
                 //重定向到登陆地址
-                String location = casProperties.getLoginUrl() + "?service=" + casProperties.getLocalServerUrl();
+                String location = casProperties.getLoginUrl() + "?service=" + URLEncoder.encode(casProperties.getLocalServerUrl().toString(), "UTF-8");
                 debug("Match login path...");
                 debug("Now send redirect to " + location);
                 resp.sendRedirect(location);

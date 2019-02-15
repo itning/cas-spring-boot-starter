@@ -12,6 +12,7 @@
 [![GitHub repo size in bytes](https://img.shields.io/github/repo-size/itning/cas-spring-boot-starter.svg)]()
 [![language](https://img.shields.io/badge/language-JAVA-orange.svg)]()
 [![](https://jitpack.io/v/itning/cas-spring-boot-starter.svg)](https://jitpack.io/#itning/cas-spring-boot-starter)
+[![Build Status](https://travis-ci.org/itning/cas-spring-boot-starter.svg?branch=master)](https://travis-ci.org/itning/cas-spring-boot-starter)
 
 ## 安装
 

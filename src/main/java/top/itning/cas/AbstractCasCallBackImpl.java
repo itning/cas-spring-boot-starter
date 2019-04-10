@@ -12,18 +12,21 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import static org.springframework.http.HttpHeaders.*;
+
 /**
  * Cas 回调默认实现
  *
  * @author itning
  */
-final public class CasCallBackDefaultImpl implements ICasCallback {
-    private static final Logger logger = LoggerFactory.getLogger(CasCallBackDefaultImpl.class);
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+@SuppressWarnings("WeakerAccess")
+public abstract class AbstractCasCallBackImpl implements ICasCallback {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractCasCallBackImpl.class);
+    protected static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private final CasProperties casProperties;
+    protected final CasProperties casProperties;
 
-    CasCallBackDefaultImpl(CasProperties casProperties) {
+    protected AbstractCasCallBackImpl(CasProperties casProperties) {
         this.casProperties = casProperties;
     }
 
@@ -36,7 +39,7 @@ final public class CasCallBackDefaultImpl implements ICasCallback {
     @Override
     public void onLoginFailure(HttpServletResponse resp, HttpServletRequest req, Exception e) throws IOException {
         allowCors(resp, req);
-        resp.setHeader("Retry-After", "10");
+        resp.setHeader(RETRY_AFTER, "10");
         resp.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
         resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         RestModel<Void> restModel = new RestModel<>();
@@ -83,12 +86,13 @@ final public class CasCallBackDefaultImpl implements ICasCallback {
      * @param resp {@link HttpServletResponse}
      * @param req  {@link HttpServletRequest}
      */
-    private void allowCors(HttpServletResponse resp, HttpServletRequest req) {
-        String origin = req.getHeader("Origin");
-        resp.setHeader("Access-Control-Allow-Credentials", "true");
-        resp.setHeader("Access-Control-Allow-Origin", origin);
-        resp.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS,DELETE,PUT,PATCH");
-        resp.setHeader("Access-Control-Allow-Headers", req.getHeader("Access-Control-Request-Headers"));
+    protected void allowCors(HttpServletResponse resp, HttpServletRequest req) {
+        String origin = req.getHeader(ORIGIN);
+        resp.setHeader(ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+        resp.setHeader(ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+        resp.setHeader(ACCESS_CONTROL_ALLOW_METHODS, "POST,GET,OPTIONS,DELETE,PUT,PATCH");
+        resp.setHeader(ACCESS_CONTROL_ALLOW_HEADERS, req.getHeader(ACCESS_CONTROL_REQUEST_HEADERS));
+        resp.setIntHeader(ACCESS_CONTROL_MAX_AGE, 2592000);
     }
 
     /**

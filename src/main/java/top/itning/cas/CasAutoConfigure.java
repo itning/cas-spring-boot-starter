@@ -34,12 +34,14 @@ public class CasAutoConfigure {
     @Bean
     @ConditionalOnMissingBean
     public ICasCallback iCasCallback() {
-        return new CasCallBackDefaultImpl(casProperties);
+        return new AbstractCasCallBackImpl(casProperties) {
+        };
     }
 
     @Bean
     @ConditionalOnMissingBean
     public ICasConfig iCasConfig() {
-        return new CasConfigDefaultImpl(casProperties);
+        return new AbstractCasConfigImpl(casProperties) {
+        };
     }
 }

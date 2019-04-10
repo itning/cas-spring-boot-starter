@@ -9,6 +9,7 @@ import java.io.Serializable;
  *
  * @author itning
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class RestModel<T> implements Serializable {
     private int code;
     private String msg;

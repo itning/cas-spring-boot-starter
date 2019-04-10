@@ -17,11 +17,12 @@ import java.util.Map;
  *
  * @author itning
  */
-final public class CasConfigDefaultImpl implements ICasConfig {
-    private static final Logger logger = LoggerFactory.getLogger(CasConfigDefaultImpl.class);
-    private final CasProperties casProperties;
+@SuppressWarnings("WeakerAccess")
+public abstract class AbstractCasConfigImpl implements ICasConfig {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractCasConfigImpl.class);
+    protected final CasProperties casProperties;
 
-    CasConfigDefaultImpl(CasProperties casProperties) {
+    protected AbstractCasConfigImpl(CasProperties casProperties) {
         this.casProperties = casProperties;
     }
 

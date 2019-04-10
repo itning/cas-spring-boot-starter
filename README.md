@@ -1,16 +1,17 @@
 # CAS 单点登陆 spring boot starter
 
-[![GitHub stars](https://img.shields.io/github/stars/itning/cas-spring-boot-starter.svg)](https://github.com/itning/cas-spring-boot-starter/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/itning/cas-spring-boot-starter.svg)](https://github.com/itning/cas-spring-boot-starter/network)
-[![GitHub watchers](https://img.shields.io/github/watchers/itning/cas-spring-boot-starter.svg?style=social&label=Watch)]()
-[![GitHub followers](https://img.shields.io/github/followers/itning.svg?style=social&label=Follow)]()
-[![GitHub issues](https://img.shields.io/github/issues/itning/cas-spring-boot-starter.svg)](https://github.com/itning/cas-spring-boot-starter/issues)
+[![GitHub stars](https://img.shields.io/github/stars/itning/cas-spring-boot-starter.svg?style=social&label=Stars)](https://github.com/itning/cas-spring-boot-starter/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/itning/cas-spring-boot-starter.svg?style=social&label=Fork)](https://github.com/itning/cas-spring-boot-starter/network/members)
+[![GitHub watchers](https://img.shields.io/github/watchers/itning/cas-spring-boot-starter.svg?style=social&label=Watch)](https://github.com/itning/cas-spring-boot-starter/watchers)
+[![GitHub followers](https://img.shields.io/github/followers/itning.svg?style=social&label=Follow)](https://github.com/itning?tab=followers)
 
+[![GitHub issues](https://img.shields.io/github/issues/itning/cas-spring-boot-starter.svg)](https://github.com/itning/cas-spring-boot-starter/issues)
 [![GitHub license](https://img.shields.io/github/license/itning/cas-spring-boot-starter.svg)](https://github.com/itning/cas-spring-boot-starter/blob/master/LICENSE)
-[![GitHub last commit](https://img.shields.io/github/last-commit/itning/cas-spring-boot-starter.svg)]()
+[![GitHub last commit](https://img.shields.io/github/last-commit/itning/cas-spring-boot-starter.svg)](https://github.com/itning/cas-spring-boot-starter/commits)
 [![GitHub release](https://img.shields.io/github/release/itning/cas-spring-boot-starter.svg)](https://github.com/itning/cas-spring-boot-starter/releases)
-[![GitHub repo size in bytes](https://img.shields.io/github/repo-size/itning/cas-spring-boot-starter.svg)]()
-[![language](https://img.shields.io/badge/language-JAVA-orange.svg)]()
+[![GitHub repo size in bytes](https://img.shields.io/github/repo-size/itning/cas-spring-boot-starter.svg)](https://github.com/itning/cas-spring-boot-starter)
+[![HitCount](http://hits.dwyl.io/itning/cas-spring-boot-starter.svg)](http://hits.dwyl.io/itning/cas-spring-boot-starter)
+[![language](https://img.shields.io/badge/language-JAVA-green.svg)](https://github.com/itning/cas-spring-boot-starter)
 [![](https://jitpack.io/v/itning/cas-spring-boot-starter.svg)](https://jitpack.io/#itning/cas-spring-boot-starter)
 [![Build Status](https://travis-ci.org/itning/cas-spring-boot-starter.svg?branch=master)](https://travis-ci.org/itning/cas-spring-boot-starter)
 

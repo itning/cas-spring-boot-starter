@@ -1,10 +1,16 @@
-package top.itning.cas;
+package top.itning.cas.callback;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import top.itning.cas.CasProperties;
+import top.itning.cas.RestModel;
+import top.itning.cas.callback.login.ILoginFailureCallBack;
+import top.itning.cas.callback.login.ILoginNeverCallBack;
+import top.itning.cas.callback.login.ILoginSuccessCallBack;
+import top.itning.cas.callback.option.IOptionsHttpMethodCallBack;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,7 +26,7 @@ import static org.springframework.http.HttpHeaders.*;
  * @author itning
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class AbstractCasCallBackImpl implements ICasCallback {
+public abstract class AbstractCasCallBackImpl implements IOptionsHttpMethodCallBack, ILoginSuccessCallBack, ILoginFailureCallBack, ILoginNeverCallBack {
     private static final Logger logger = LoggerFactory.getLogger(AbstractCasCallBackImpl.class);
     protected static final ObjectMapper MAPPER = new ObjectMapper();
 

@@ -8,14 +8,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import top.itning.cas.callback.option.IOptionsHttpMethodCallBack;
+import top.itning.cas.callback.login.ILoginFailureCallBack;
+import top.itning.cas.callback.login.ILoginNeverCallBack;
+import top.itning.cas.callback.login.ILoginSuccessCallBack;
+import top.itning.cas.config.IAnalysisResponseBody;
+import top.itning.cas.config.ICheckIsLoginConfig;
+import top.itning.cas.config.INeedSetMap2SessionConfig;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -27,8 +36,13 @@ public class CasFilter implements Filter {
     private static final Logger logger = LoggerFactory.getLogger(CasFilter.class);
     private RestTemplate restTemplate;
     private CasProperties casProperties;
-    private ICasCallback iCasCallback;
-    private ICasConfig iCasConfig;
+    private ILoginFailureCallBack loginFailureCallBack;
+    private ILoginNeverCallBack loginNeverCallBack;
+    private ILoginSuccessCallBack loginSuccessCallBack;
+    private IOptionsHttpMethodCallBack optionsHttpMethodCallBack;
+    private IAnalysisResponseBody analysisResponseBody;
+    private ICheckIsLoginConfig checkIsLoginConfig;
+    private INeedSetMap2SessionConfig needSetMap2SessionConfig;
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -36,12 +50,22 @@ public class CasFilter implements Filter {
         ApplicationContext ctx = WebApplicationContextUtils
                 .getRequiredWebApplicationContext(filterConfig.getServletContext());
         casProperties = ctx.getBean(CasProperties.class);
-        iCasCallback = ctx.getBean(ICasCallback.class);
-        iCasConfig = ctx.getBean(ICasConfig.class);
+        loginFailureCallBack = ctx.getBean(ILoginFailureCallBack.class);
+        loginNeverCallBack = ctx.getBean(ILoginNeverCallBack.class);
+        loginSuccessCallBack = ctx.getBean(ILoginSuccessCallBack.class);
+        optionsHttpMethodCallBack = ctx.getBean(IOptionsHttpMethodCallBack.class);
+        analysisResponseBody = ctx.getBean(IAnalysisResponseBody.class);
+        checkIsLoginConfig = ctx.getBean(ICheckIsLoginConfig.class);
+        needSetMap2SessionConfig = ctx.getBean(INeedSetMap2SessionConfig.class);
         logger.info("Use login path: " + casProperties.getClientLoginPath());
         logger.info("Use logout path: " + casProperties.getClientLogoutPath());
-        logger.info("Use ICasCallback Implements: " + iCasCallback.getClass().getName());
-        logger.info("Use ICasConfig Implements: " + iCasConfig.getClass().getName());
+        logger.info("Use ILoginFailureCallBack Implements: " + loginFailureCallBack.getClass().getName());
+        logger.info("Use ILoginNeverCallBack Implements: " + loginNeverCallBack.getClass().getName());
+        logger.info("Use ILoginSuccessCallBack Implements: " + loginSuccessCallBack.getClass().getName());
+        logger.info("Use IOptionsHttpMethodCallBack Implements: " + optionsHttpMethodCallBack.getClass().getName());
+        logger.info("Use IAnalysisResponseBody Implements: " + analysisResponseBody.getClass().getName());
+        logger.info("Use ICheckIsLoginConfig Implements: " + checkIsLoginConfig.getClass().getName());
+        logger.info("Use INeedSetMap2SessionConfig Implements: " + needSetMap2SessionConfig.getClass().getName());
         debug(casProperties.toString());
 
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
@@ -57,16 +81,11 @@ public class CasFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
         HttpServletRequest req = (HttpServletRequest) request;
         debug("Get Servlet Path: " + req.getServletPath());
-        if (casProperties.getExclude() != null) {
-            for (String path : casProperties.getExclude()) {
-                if (req.getServletPath().startsWith(path)) {
-                    chain.doFilter(request, response);
-                    return;
-                }
-            }
+        if (isExcludePath(req, resp, chain)) {
+            return;
         }
         if (casProperties.isAllowCors() && HttpMethod.OPTIONS.matches(req.getMethod())) {
-            iCasCallback.onOptionsHttpMethodRequest(resp, req);
+            optionsHttpMethodCallBack.onOptionsHttpMethodRequest(resp, req);
             return;
         }
         //登陆登出
@@ -74,68 +93,107 @@ public class CasFilter implements Filter {
             //login
             if (casProperties.getClientLoginPath().equals(req.getServletPath())) {
                 //重定向到登陆地址
-                String location = casProperties.getLoginUrl() + "?service=" + URLEncoder.encode(casProperties.getLocalServerUrl().toString(), "UTF-8");
-                debug("Match login path...");
-                debug("Now send redirect to " + location);
-                resp.sendRedirect(location);
+                doRedirectLoginPath(resp);
                 return;
             }
             //logout
             if (casProperties.getClientLogoutPath().equals(req.getServletPath())) {
-                if (iCasConfig.needSetMapSession()) {
-                    HttpSession session = req.getSession();
-                    session.removeAttribute(casProperties.getSessionAttributeName());
-                    session.invalidate();
-                }
+                removeCurrentLoginUserSessionAttribute(req.getSession());
                 //重定向到登出地址
-                String location = casProperties.getLogoutUrl().toString();
-                debug("Match logout path...");
-                debug("Now send redirect to " + location);
-                resp.sendRedirect(location);
+                doRedirectLogoutPath(resp);
                 return;
             }
         }
         //CAS Start
         String ticket = req.getParameter("ticket");
         if (ticket != null) {
-            debug("Get Ticket: " + ticket);
-            try {
-                debug("Send request to " + casProperties.getServerUrl() + "/serviceValidate?ticket=" + ticket + "&service=" + casProperties.getLocalServerUrl());
-                ResponseEntity<String> responseEntity = restTemplate.getForEntity(casProperties.getServerUrl() + "/serviceValidate?ticket={ticket}&service={local_server_url}", String.class, ticket, casProperties.getLocalServerUrl());
-                debug("Get response status code: " + responseEntity.getStatusCode().value());
-                if (responseEntity.getBody() != null) {
-                    debug("Get response body: ");
-                    debug(responseEntity.getBody());
-                    Map<String, String> map = iCasConfig.analysisBody2Map(responseEntity.getBody());
-                    //解析成功,用户成功登陆
-                    if (iCasConfig.needSetMapSession()) {
-                        HttpSession session = req.getSession();
-                        session.setAttribute(casProperties.getSessionAttributeName(), map);
-                        debug("Set attribute " + casProperties.getSessionAttributeName() + " success");
-                    }
-                    iCasCallback.onLoginSuccess(resp, req, map);
-                    return;
-                } else {
-                    logger.error("AUTHENTICATION failed : Body is Null");
-                    iCasCallback.onLoginFailure(resp, req, new RuntimeException("AUTHENTICATION failed : Body is Null"));
-                    return;
-                }
-            } catch (Exception e) {
-                debug(e.getMessage());
-                iCasCallback.onLoginFailure(resp, req, e);
-                return;
-            }
+            doLoginWithTicket(resp, req, ticket);
+            return;
         }
-        if (iCasConfig.isLogin(resp, req)) {
+        if (checkIsLoginConfig.isLogin(resp, req)) {
             chain.doFilter(request, response);
             return;
         }
-        iCasCallback.onNeverLogin(resp, req);
+        loginNeverCallBack.onNeverLogin(resp, req);
     }
 
     @Override
     public void destroy() {
 
+    }
+
+    private void doRedirectLoginPath(HttpServletResponse resp) throws IOException {
+        String location = getRedirectLocation();
+        debug("Match login path...");
+        debug("Now send redirect to " + location);
+        resp.sendRedirect(location);
+    }
+
+    private void doRedirectLogoutPath(HttpServletResponse resp) throws IOException {
+        String location = casProperties.getLogoutUrl().toString();
+        debug("Match logout path...");
+        debug("Now send redirect to " + location);
+        resp.sendRedirect(location);
+    }
+
+    private void doLoginWithTicket(HttpServletResponse resp, HttpServletRequest req, String ticket) throws IOException, ServletException {
+        debug("Get Ticket: " + ticket);
+        try {
+            Optional<String> bodyOptional = sendRequestAndGetResponseBody(ticket);
+            if (bodyOptional.isPresent()) {
+                String body = bodyOptional.get();
+                debug("Get response body: ");
+                debug(body);
+                Map<String, String> map = analysisResponseBody.analysisBody2Map(body);
+                //解析成功,用户成功登陆
+                setMap2Session(req.getSession(), map);
+                loginSuccessCallBack.onLoginSuccess(resp, req, map);
+            } else {
+                logger.error("AUTHENTICATION failed : Body is Null");
+                loginFailureCallBack.onLoginFailure(resp, req, new RuntimeException("AUTHENTICATION failed : Body is Null"));
+            }
+        } catch (Exception e) {
+            debug(e.getMessage());
+            loginFailureCallBack.onLoginFailure(resp, req, e);
+        }
+    }
+
+    private String getRedirectLocation() throws UnsupportedEncodingException {
+        return casProperties.getLoginUrl() + "?service=" + URLEncoder.encode(casProperties.getLocalServerUrl().toString(), "UTF-8");
+    }
+
+
+    private void setMap2Session(HttpSession session, Map<String, String> map) {
+        if (needSetMap2SessionConfig.needSetMapSession()) {
+            session.setAttribute(casProperties.getSessionAttributeName(), map);
+            debug("Set attribute " + casProperties.getSessionAttributeName() + " success");
+        }
+    }
+
+    private Optional<String> sendRequestAndGetResponseBody(String ticket) {
+        debug("Send request to " + casProperties.getServerUrl() + "/serviceValidate?ticket=" + ticket + "&service=" + casProperties.getLocalServerUrl());
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(casProperties.getServerUrl() + "/serviceValidate?ticket={ticket}&service={local_server_url}", String.class, ticket, casProperties.getLocalServerUrl());
+        debug("Get response status code: " + responseEntity.getStatusCode().value());
+        return Optional.ofNullable(responseEntity.getBody());
+    }
+
+    private void removeCurrentLoginUserSessionAttribute(HttpSession session) {
+        if (needSetMap2SessionConfig.needSetMapSession()) {
+            session.removeAttribute(casProperties.getSessionAttributeName());
+            session.invalidate();
+        }
+    }
+
+    private boolean isExcludePath(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws IOException, ServletException {
+        if (casProperties.getExclude() != null) {
+            for (String path : casProperties.getExclude()) {
+                if (req.getServletPath().startsWith(path)) {
+                    chain.doFilter(req, resp);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

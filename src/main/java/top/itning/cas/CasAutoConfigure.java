@@ -7,6 +7,15 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import top.itning.cas.callback.AbstractCasCallBackImpl;
+import top.itning.cas.callback.option.IOptionsHttpMethodCallBack;
+import top.itning.cas.callback.login.ILoginFailureCallBack;
+import top.itning.cas.callback.login.ILoginNeverCallBack;
+import top.itning.cas.callback.login.ILoginSuccessCallBack;
+import top.itning.cas.config.AbstractCasConfigImpl;
+import top.itning.cas.config.IAnalysisResponseBody;
+import top.itning.cas.config.ICheckIsLoginConfig;
+import top.itning.cas.config.INeedSetMap2SessionConfig;
 
 /**
  * @author itning
@@ -14,11 +23,15 @@ import org.springframework.core.Ordered;
 @Configuration
 @EnableConfigurationProperties(CasProperties.class)
 public class CasAutoConfigure {
-    private final CasProperties casProperties;
+    private final AbstractCasCallBackImpl abstractCasCallBack;
+    private final AbstractCasConfigImpl abstractCasConfig;
 
     @Autowired
     public CasAutoConfigure(CasProperties casProperties) {
-        this.casProperties = casProperties;
+        abstractCasCallBack = new AbstractCasCallBackImpl(casProperties) {
+        };
+        abstractCasConfig = new AbstractCasConfigImpl(casProperties) {
+        };
     }
 
     @Bean
@@ -33,15 +46,43 @@ public class CasAutoConfigure {
 
     @Bean
     @ConditionalOnMissingBean
-    public ICasCallback iCasCallback() {
-        return new AbstractCasCallBackImpl(casProperties) {
-        };
+    public ILoginFailureCallBack iLoginFailureCallBack() {
+        return abstractCasCallBack;
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ICasConfig iCasConfig() {
-        return new AbstractCasConfigImpl(casProperties) {
-        };
+    public ILoginNeverCallBack iLoginNeverCallBack() {
+        return abstractCasCallBack;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ILoginSuccessCallBack iLoginSuccessCallBack() {
+        return abstractCasCallBack;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public IOptionsHttpMethodCallBack iOptionsHttpMethodCallBack() {
+        return abstractCasCallBack;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public IAnalysisResponseBody iAnalysisResponseBody() {
+        return abstractCasConfig;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ICheckIsLoginConfig iCheckIsLoginConfig() {
+        return abstractCasConfig;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public INeedSetMap2SessionConfig iNeedSetMap2SessionConfig() {
+        return abstractCasConfig;
     }
 }

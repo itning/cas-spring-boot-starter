@@ -1,10 +1,11 @@
-package top.itning.cas;
+package top.itning.cas.config;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.itning.cas.CasProperties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +19,7 @@ import java.util.Map;
  * @author itning
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class AbstractCasConfigImpl implements ICasConfig {
+public abstract class AbstractCasConfigImpl implements IAnalysisResponseBody, ICheckIsLoginConfig, INeedSetMap2SessionConfig {
     private static final Logger logger = LoggerFactory.getLogger(AbstractCasConfigImpl.class);
     protected final CasProperties casProperties;
 
@@ -52,5 +53,10 @@ public abstract class AbstractCasConfigImpl implements ICasConfig {
     @Override
     public boolean isLogin(HttpServletResponse resp, HttpServletRequest req) {
         return req.getSession().getAttribute(casProperties.getSessionAttributeName()) != null;
+    }
+
+    @Override
+    public boolean needSetMapSession() {
+        return true;
     }
 }

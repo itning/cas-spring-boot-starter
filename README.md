@@ -38,7 +38,7 @@
 <dependency>
     <groupId>com.github.itning</groupId>
     <artifactId>cas-spring-boot-starter</artifactId>
-    <version>1.0.7-RELEASE</version>
+    <version>1.1.0-RELEASE</version>
 </dependency>
 ```
 
@@ -59,7 +59,7 @@ allprojects {
 
 ```groovy
 dependencies {
-	implementation 'com.github.itning:cas-spring-boot-starter:1.0.7-RELEASE'
+	implementation 'com.github.itning:cas-spring-boot-starter:1.1.0-RELEASE'
 }
 ```
 

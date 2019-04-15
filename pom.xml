@@ -124,6 +124,7 @@
                 <configuration>
                     <skip>false</skip>
                     <show>public</show>
+                    <doclint>none</doclint>
                     <charset>${project.build.sourceEncoding}</charset>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <docencoding>${project.build.sourceEncoding}</docencoding>

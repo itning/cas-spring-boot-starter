@@ -57,15 +57,15 @@ public class CasFilter implements Filter {
         analysisResponseBody = ctx.getBean(IAnalysisResponseBody.class);
         checkIsLoginConfig = ctx.getBean(ICheckIsLoginConfig.class);
         needSetMap2SessionConfig = ctx.getBean(INeedSetMap2SessionConfig.class);
-        logger.info("Use login path: " + casProperties.getClientLoginPath());
-        logger.info("Use logout path: " + casProperties.getClientLogoutPath());
-        logger.info("Use ILoginFailureCallBack Implements: " + loginFailureCallBack.getClass().getName());
-        logger.info("Use ILoginNeverCallBack Implements: " + loginNeverCallBack.getClass().getName());
-        logger.info("Use ILoginSuccessCallBack Implements: " + loginSuccessCallBack.getClass().getName());
-        logger.info("Use IOptionsHttpMethodCallBack Implements: " + optionsHttpMethodCallBack.getClass().getName());
-        logger.info("Use IAnalysisResponseBody Implements: " + analysisResponseBody.getClass().getName());
-        logger.info("Use ICheckIsLoginConfig Implements: " + checkIsLoginConfig.getClass().getName());
-        logger.info("Use INeedSetMap2SessionConfig Implements: " + needSetMap2SessionConfig.getClass().getName());
+        logger.info("Use login path: {}", casProperties.getClientLoginPath());
+        logger.info("Use logout path: {}", casProperties.getClientLogoutPath());
+        logger.info("Use ILoginFailureCallBack Implements: {}", loginFailureCallBack.getClass().getName());
+        logger.info("Use ILoginNeverCallBack Implements: {}", loginNeverCallBack.getClass().getName());
+        logger.info("Use ILoginSuccessCallBack Implements: {}", loginSuccessCallBack.getClass().getName());
+        logger.info("Use IOptionsHttpMethodCallBack Implements: {}", optionsHttpMethodCallBack.getClass().getName());
+        logger.info("Use IAnalysisResponseBody Implements: {}", analysisResponseBody.getClass().getName());
+        logger.info("Use ICheckIsLoginConfig Implements: {}", checkIsLoginConfig.getClass().getName());
+        logger.info("Use INeedSetMap2SessionConfig Implements: {}", needSetMap2SessionConfig.getClass().getName());
         debug(casProperties.toString());
 
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();

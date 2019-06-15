@@ -13,6 +13,10 @@ import java.util.List;
 @ConfigurationProperties(prefix = "cas")
 public class CasProperties {
     /**
+     * 启用
+     */
+    private boolean enabled = true;
+    /**
      * CAS服务端地址
      */
     private URI serverUrl;
@@ -66,6 +70,14 @@ public class CasProperties {
      * 排除过滤
      */
     private List<String> exclude;
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
     public URI getServerUrl() {
         return serverUrl;
@@ -174,7 +186,8 @@ public class CasProperties {
     @Override
     public String toString() {
         return "CasProperties{" +
-                "serverUrl=" + serverUrl +
+                "enabled=" + enabled +
+                ", serverUrl=" + serverUrl +
                 ", loginUrl=" + loginUrl +
                 ", logoutUrl=" + logoutUrl +
                 ", loginSuccessUrl=" + loginSuccessUrl +

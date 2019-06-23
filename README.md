@@ -1,10 +1,10 @@
-# CAS 单点登陆 spring boot starter
+<h3 align="center">CAS 单点登陆 spring boot starter</h3>
+<div align="center">
 
 [![GitHub stars](https://img.shields.io/github/stars/itning/cas-spring-boot-starter.svg?style=social&label=Stars)](https://github.com/itning/cas-spring-boot-starter/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/itning/cas-spring-boot-starter.svg?style=social&label=Fork)](https://github.com/itning/cas-spring-boot-starter/network/members)
 [![GitHub watchers](https://img.shields.io/github/watchers/itning/cas-spring-boot-starter.svg?style=social&label=Watch)](https://github.com/itning/cas-spring-boot-starter/watchers)
 [![GitHub followers](https://img.shields.io/github/followers/itning.svg?style=social&label=Follow)](https://github.com/itning?tab=followers)
-
 [![GitHub issues](https://img.shields.io/github/issues/itning/cas-spring-boot-starter.svg)](https://github.com/itning/cas-spring-boot-starter/issues)
 [![GitHub license](https://img.shields.io/github/license/itning/cas-spring-boot-starter.svg)](https://github.com/itning/cas-spring-boot-starter/blob/master/LICENSE)
 [![GitHub last commit](https://img.shields.io/github/last-commit/itning/cas-spring-boot-starter.svg)](https://github.com/itning/cas-spring-boot-starter/commits)
@@ -14,6 +14,10 @@
 [![language](https://img.shields.io/badge/language-JAVA-green.svg)](https://github.com/itning/cas-spring-boot-starter)
 [![](https://jitpack.io/v/itning/cas-spring-boot-starter.svg)](https://jitpack.io/#itning/cas-spring-boot-starter)
 [![Build Status](https://travis-ci.org/itning/cas-spring-boot-starter.svg?branch=master)](https://travis-ci.org/itning/cas-spring-boot-starter)
+
+</div>
+
+---
 
 ## 安装
 
@@ -63,8 +67,6 @@ dependencies {
 }
 ```
 
-
-
 ## 使用
 
 ### 配置
@@ -88,79 +90,115 @@ dependencies {
 |       cas.logout-url        |       登出网址(CAS服务端地址)        |        null        |
 |       cas.server-url        |            CAS服务端地址             |        null        |
 | cas.exclude | 排除过滤地址(会排除以其开头的请求) |  |
+| cas.enabled | 是否开启 | true |
 
 **注意：默认为null的必须配置**
 
 #### 实现登陆状态回调
 
-**回调有默认实现类: [CasCallBackDefaultImpl](https://github.com/itning/cas-spring-boot-starter/blob/master/src/main/java/top/itning/cas/CasCallBackDefaultImpl.java)**
+**回调有默认实现类: [CasAutoConfigure](https://github.com/itning/cas-spring-boot-starter/blob/master/src/main/java/top/itning/cas/CasAutoConfigure.java)**，即**如果你不自己实现接口则会使用默认的实现**
 
-写一个类实现 [ICasCallback](https://github.com/itning/cas-spring-boot-starter/blob/master/src/main/java/top/itning/cas/ICasCallback.java) 接口
+各个接口的作用请看接口注释。
+
+写两个类实现 [callback和config](https://github.com/itning/cas-spring-boot-starter/tree/master/src/main/java/top/itning/cas) 包下的接口
 
 ```java
-import org.springframework.stereotype.Component;
-import top.itning.cas.ICasCallback;
+import top.itning.cas.callback.login.ILoginFailureCallBack;
+import top.itning.cas.callback.login.ILoginNeverCallBack;
+import top.itning.cas.callback.login.ILoginSuccessCallBack;
+import top.itning.cas.callback.option.IOptionsHttpMethodCallBack;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Map;
 
 /**
- * 自定义回调
- *
  * @author itning
+ * @date 2019/6/23 10:26
  */
-@Component//必须要有该注解 目的将该类加入IOC容器中
-public class MyCasCallBack implements ICasCallback {
-    @Override
-    public void onLoginSuccess(HttpServletResponse resp, HttpServletRequest req, Map<String, String> attributesMap) throws IOException, ServletException {
-        //当登陆成功时自动调用该方法
-        //你可以向浏览器写一段话或者写入JSON
-        PrintWriter writer = resp.getWriter();
-        writer.write("success");
-        writer.flush();
-        writer.close();
-    }
-
+public class CallBackImpl implements ILoginFailureCallBack, ILoginNeverCallBack, ILoginSuccessCallBack, IOptionsHttpMethodCallBack {
     @Override
     public void onLoginFailure(HttpServletResponse resp, HttpServletRequest req, Exception e) throws IOException, ServletException {
-        //当登陆失败的时候回调
-        PrintWriter writer = resp.getWriter();
-        writer.write("fail " + e.getMessage());
-        writer.flush();
-        writer.close();
+        
     }
 
     @Override
     public void onNeverLogin(HttpServletResponse resp, HttpServletRequest req) throws IOException, ServletException {
-        //当用户没有登陆时的回调
-        PrintWriter writer = resp.getWriter();
-        writer.write("never");
-        writer.flush();
-        writer.close();
+
+    }
+
+    @Override
+    public void onLoginSuccess(HttpServletResponse resp, HttpServletRequest req, Map<String, String> attributesMap) throws IOException, ServletException {
+
     }
 
     @Override
     public void onOptionsHttpMethodRequest(HttpServletResponse resp, HttpServletRequest req) throws IOException, ServletException {
-        //跨域配置
-        //注意:需要在配置文件中将allow-cors设置为true 这个方法才会被调用
-        //cas.allow-cors=true
-        String origin = req.getHeader("Origin");
-        resp.setHeader("Access-Control-Allow-Credentials", "true");
-        resp.setHeader("Access-Control-Allow-Origin", origin);
-        resp.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS,DELETE,PUT,PATCH");
-        resp.setHeader("Access-Control-Allow-Headers", req.getHeader("Access-Control-Request-Headers"));
+
     }
 }
+
 ```
+```java
+import top.itning.cas.config.IAnalysisResponseBody;
+import top.itning.cas.config.ICheckIsLoginConfig;
+import top.itning.cas.config.INeedSetMap2SessionConfig;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
+
+/**
+ * @author itning
+ * @date 2019/6/23 10:27
+ */
+public class ConfigImpl implements IAnalysisResponseBody, ICheckIsLoginConfig, INeedSetMap2SessionConfig {
+    @Override
+    public Map<String, String> analysisBody2Map(String body) {
+        return null;
+    }
+
+    @Override
+    public boolean isLogin(HttpServletResponse resp, HttpServletRequest req) {
+        return false;
+    }
+
+    @Override
+    public boolean needSetMapSession() {
+        return false;
+    }
+}
+
+```
+
 ## 如何
 
 1. 如何获取CAS服务器登陆后传过来的属性？
 
    我们将它放在session中了，你可以使用 ```HttpSession#getAttribute``` 方法来获取，参数默认为```_cas_attributes_```，当然你可以在配置中更改```cas.session-attribute-name```的值
+   
+2. 如何配置只过滤某些URL路径？
+
+   只需在**过滤器初始化之前**调用该静态方法：
+
+   ```java
+   top.itning.cas.CasAutoConfigure.setUrlPatterns(String... urlPatterns);
+   ```
+
+   源码：
+
+   ```java
+   /**
+   * 设置拦截路径
+   *
+   * @param urlPatterns 路径
+   */
+   public static void setUrlPatterns(String... urlPatterns) {
+   	up = urlPatterns;
+   }
+   ```
 
 ## 流程
 

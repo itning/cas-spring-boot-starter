@@ -52,7 +52,7 @@ public class CasAutoConfigure {
     }
 
     @Bean
-    public FilterRegistrationBean topItningCasFilterRegistration(CasProperties casProperties) {
+    public FilterRegistrationBean<CasFilter> topItningCasFilterRegistration(CasProperties casProperties) {
         debug("urlPatterns：" + Arrays.toString(up));
         FilterRegistrationBean<CasFilter> registration = new FilterRegistrationBean<>();
         registration.setEnabled(casProperties.isEnabled());
